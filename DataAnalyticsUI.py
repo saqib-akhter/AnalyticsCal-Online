@@ -21,6 +21,7 @@ import matplotlib
 matplotlib.use("TkAgg")
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2TkAgg
 from matplotlib.figure import Figure
+from matplotlib.pyplot import plot, ion, show
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 
@@ -60,22 +61,35 @@ myDict = InitDict()
 
 # Add a title       
 win.title("AnalyticsCal")
+win.resizable(True, True) 
 
 #-------------------------------------------------------------------------Plots
 
 def reg_plot(x_plot,y_plot,y_predicted, equation_str, title, x_label, y_label, color = None):
-    plt.clf()
+
     
     var = myDict.getNoOfVar()
-    if(var == 2):    
+
+    if(var == 2):   
+        plt.clf()
+        ion()
         raw_plot = plt.scatter(x_plot, y_plot, color = 'b')
         predict_plot = plt.plot(x_plot,y_predicted , '-',color = color)
         plt.title(title)					
         plt.xlabel(x_label)					
         plt.ylabel(y_label)
         plt.legend((raw_plot, predict_plot),('Raw Data', 'Prediction equation = ' + equation_str),loc=(-0.05,-0.20), scatterpoints=1, ncol=3, fontsize=8)
+        plt.legend(fontsize='x-large')
+        equation_str = 'Prediction equation : ' + equation_str
+        
+        plt.figtext(0.1, 0.009, equation_str, wrap=True, horizontalalignment='left', fontsize=12, clip_on=True)
+        #fig = plt.figure()
+        #fig.text(.5, .05, equation_str, ha='center')
         plt.tight_layout()
         plt.show()
+    else:
+        pass
+    '''        
     elif(var == 3):
         fig = plt.figure()
         ax = fig.add_subplot(111, projection='3d') 
@@ -86,8 +100,7 @@ def reg_plot(x_plot,y_plot,y_predicted, equation_str, title, x_label, y_label, c
         ax.set_zlabel(y_label)
         ax.legend((r, p),('Raw Data', 'Prediction equation = ' + equation_str),loc=(-0.05,-0.20), scatterpoints=1, ncol=3, fontsize=8)
         plt.show()
-    else:
-        pass
+    '''
     
 
     
@@ -146,14 +159,16 @@ mighty.grid(column=0, row=0, padx=8, pady=4)
 
 # LabelFrame using tab1 as the parent - for output console
 mighty1 = ttk.LabelFrame(tab1, text=' Output Console')
-mighty1.grid(column=1, row=0,sticky=tk.N+tk.S, padx=8, pady=4, columnspan=3, rowspan = 6)
+mighty1.grid(column=1, row=0,sticky=tk.N+tk.S, padx=16, pady=12, columnspan=7, rowspan = 10)
 
 
 # Add big textbox
 text_h= 20
 text_w = 60
 textBox = tk.Text(mighty1, height = text_h, width = text_w,wrap=tk.WORD)
-textBox.grid(column=0, row=5, sticky=tk.N+tk.S)
+textBox.grid(column=0, row=10, sticky=tk.N+tk.S)
+
+textBox.pack(expand=True, fill='both')
 
 
 # Modified Button statistics Function
@@ -175,6 +190,7 @@ Statistics.grid(column=0, row=0, sticky='W')
 #----------------------------------------------------------------------Basic Plot
 # Modified Button Click Plot
 def click_plot():
+    ion()
     print(myDict.getNoOfVar)
     if(myDict.getNoOfVar() == 2):
         plt.scatter(myDict.getListX(), myDict.getListY(),alpha=1)					
@@ -193,6 +209,8 @@ def click_plot():
         ax.set_ylabel(lab[1])
         ax.set_zlabel(myDict.getHeader_y())
         plt.show()
+    else:
+        pass
 # Add button for plot
 plot = ttk.Button(mighty, text="Plot", command=click_plot, width = mighty_width)   
 plot.grid(column=0, row=1, sticky='W')
@@ -208,7 +226,6 @@ linear_Regression.grid(column=0, row=2, sticky='W')
 
 def clearScreen():
      textBox.delete(1.0, tk.END)
-     plt.clf()
 # Add button to cleanup console
 clearscr = ttk.Button(mighty, text="Reset", command=clearScreen,width = mighty_width)   
 clearscr.grid(column=0, row=3, sticky='W')
@@ -255,11 +272,11 @@ def getStats():
         textBox.insert(tk.INSERT, 'Standard Deviation of X1 = '+ (str(regObj.getSx1())+'\n'))
         textBox.insert(tk.INSERT, 'Standard Deviation of X2 = '+ (str(regObj.getSx2())+'\n'))
         textBox.insert(tk.INSERT, 'Standard Deviation of Y = '+ (str(regObj.getSy())+'\n'))
-        textBox.insert(tk.INSERT, 'Correlation Coefficient r(yx1).x2 = '+ (str(regObj.getRYx1_x2())+'\n'))
-        textBox.insert(tk.INSERT, 'Correlation Coefficient r(yx2).x1 = '+ (str(regObj.getRYx2_x1())+'\n'))
-        textBox.insert(tk.INSERT, 'Correlation Coefficient r(yx1) = '+ (str(regObj.getRyx1())+'\n'))
-        textBox.insert(tk.INSERT, 'Correlation Coefficient r(yx2) = '+ (str(regObj.getRyx2())+'\n'))
-        textBox.insert(tk.INSERT, 'Correlation Coefficient r(x1x2) = '+ (str(regObj.getRx1x2())+'\n'))
+        textBox.insert(tk.INSERT, 'Partial Correlation Coefficient r(yx1).x2 = '+ (str(regObj.getRYx1_x2())+'\n'))
+        textBox.insert(tk.INSERT, 'Partial Correlation Coefficient r(yx2).x1 = '+ (str(regObj.getRYx2_x1())+'\n'))
+        textBox.insert(tk.INSERT, 'Partial Correlation Coefficient r(yx1) = '+ (str(regObj.getRyx1())+'\n'))
+        textBox.insert(tk.INSERT, 'Partial Correlation Coefficient r(yx2) = '+ (str(regObj.getRyx2())+'\n'))
+        textBox.insert(tk.INSERT, 'Partial Correlation Coefficient r(x1x2) = '+ (str(regObj.getRx1x2())+'\n'))
     else:
         pass
     
