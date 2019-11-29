@@ -13,6 +13,7 @@ def csvToDict(fileName):
     header_y = ""
     row = 0
     col = 0
+    listDict = []
     
     read_file = pd.read_csv (fileName)
     path = fileName + "_conv.xlsx"
@@ -32,7 +33,6 @@ def csvToDict(fileName):
         for row in csvreader: 
             i = i+1
             if(i>1 and col == 2):
-                dict.update({float(row[0]):float(row[1])})
                 listX.append(float(row[0]))
                 listY.append(float(row[1]))
             elif(i == 1):
@@ -46,7 +46,6 @@ def csvToDict(fileName):
                     header_x = row[0]
                     
             elif(i>1 and col==3):
-                dict.update({float(row[0]):(float(row[1]),float(row[2]))})
                 listY.append(float(row[0]))
                 lx1.append(float(row[1]))
                 lx2.append(float(row[2]))
@@ -57,11 +56,20 @@ def csvToDict(fileName):
                 listY.append(float(row[0]))
         
     if(col == 3):
-        listX.append(lx1)
-        listX.append(lx2)
-    return dict,listX,listY,header_x,header_y,col
+        listDict.append(listY)
+        listDict.append(lx1)
+        listDict.append(lx2)
+    elif(col == 2):
+        listDict.append(listY)
+        listDict.append(listX)
+    else:
+        pass
+    
+    return listDict,header_x,header_y,col
 
-#dict,listX,listY,header_x,header_y,var = csvToDict("C:\\Users\\212546222\\Documents\\DA\\AnalyticsCal-Online\\Dataset\\DataSet3-ClassNotes5_7Sept2019_3Var.csv")
-#print(listX)
+#listDict,header_x,header_y,var = csvToDict("C:\\Users\\212546222\\Documents\\DA\\AnalyticsCal-Online\\Dataset\\DataSet3-ClassNotes5_7Sept2019_3Var.csv")
+#print(listDict)
+
+
 
 

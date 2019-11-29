@@ -15,10 +15,10 @@ import matplotlib.pyplot as plt
 from Regression import Regression
 
 class LinearRegression(Regression):
-    def __init__(self,Dict):
-        self.dict = OrderedDict(Dict);
-        self.threshLimit= 1.96 / (math.sqrt(len(Dict)))
-        self.elemCount=len(Dict)
+    def __init__(self,llist):
+        self.llist = llist;
+        self.threshLimit= 1.96 / (math.sqrt(len(llist[0])))
+        self.elemCount=len(llist[0])
         
     def getThreshLimit(self):
         return round(self.threshLimit,3)
@@ -44,13 +44,8 @@ class LinearRegression(Regression):
     Plot graph for Sample Data
     """    
     def displayOrigGraph(self):
-        listX = []
-        listY = []
-        i = 0
-        for x, y in self.dict.items():
-            listX.insert(i,x)
-            listY.insert(i,y)
-            i = i+1
+        listX = self.llist[1]
+        listY = self.llist[0]
            
         plt.plot(listX, listY)           
         plt.xlabel('x - axis') 
@@ -64,13 +59,8 @@ class LinearRegression(Regression):
     Plot graph after applying Linear Regression
     """ 
     def displayLinearRegGraph(self):
-        listX = []
-        listY = []
-        i = 0
-        for x, y in self.dict.items():
-            listX.insert(i,x)
-            listY.insert(i,y)
-            i = i+1
+        listX = self.llist[1]
+        listY = self.llist[0]
         
         tup = self.getCoeffM_C()
         valM = tup[0]
@@ -78,8 +68,8 @@ class LinearRegression(Regression):
         
         listY_ = []
         i=0
-        for x, y in self.dict.items():
-            val = valM * x + valC
+        for j in range(self.elemCount):
+            val = valM * self.llist[1][j] + valC
             listY_.insert(i,val)
             i = i+1
         
@@ -111,8 +101,8 @@ class LinearRegression(Regression):
     """        
     def getCovXY(self):
         sum = 0
-        for x, y in self.dict.items():
-            sum = sum + (x-self.getXMean())*(y-self.getYMean())
+        for i in range(self.elemCount):
+            sum = sum + (self.llist[1][i]-self.getXMean())*(self.llist[0][i]-self.getYMean())
         
         return (sum/(self.elemCount - 1))
  
@@ -147,8 +137,8 @@ class LinearRegression(Regression):
     """          
     def getSumOfX_MinusX_Bar(self):
         sum = 0
-        for x, y in self.dict.items():
-            sum = sum + (x - self.getXMean())
+        for x in range(self.elemCount):
+            sum = sum + (self.llist[1][x] - self.getXMean())
         return round(sum,3)   
     """
     Return Sigma (X-X bar)^2
@@ -156,8 +146,8 @@ class LinearRegression(Regression):
     def getSumOfX_MinusX_Bar_Pow2(self):
         list = []
         i = 0
-        for x, y in self.dict.items():
-            val = ((x - self.getXMean()))**2
+        for x in range(self.elemCount):
+            val = ((self.llist[1][x] - self.getXMean()))**2
             val = round(val,3)
             list.insert(i,val)
             i = i+1
@@ -171,8 +161,8 @@ class LinearRegression(Regression):
     def getSumOfY_MinusY_Bar(self):
         list = []
         i=0
-        for x, y in self.dict.items():
-            val = (y - self.getYMean())
+        for y in range(self.elemCount):
+            val = (self.llist[0][y] - self.getYMean())
             val = round(val,3)
             list.insert(i,val)
             i = i+1
@@ -185,8 +175,8 @@ class LinearRegression(Regression):
     def getSumOfY_MinusY_Bar_Pow2(self):
         list = []
         i = 0
-        for x, y in self.dict.items():
-            val = ((y - self.getYMean()))**2
+        for y in range(self.elemCount):
+            val = ((self.llist[0][y] - self.getYMean()))**2
             val = round(val,3)
             list.insert(i,val)
             i = i+1
@@ -197,21 +187,21 @@ class LinearRegression(Regression):
     Return Sigma X
     """      
     def getSumOfX(self):
-        val = sum(self.dict.keys())
+        val = sum(self.llist[1])
         return round(val,3) 
     """
     Return Sigma Y
     """   
     def getSumOfY(self):
-        val = sum(self.dict.values())
+        val = sum(self.llist[0])
         return round(val,3)
     """
     Return Sigma XY
     """   
     def getSumOfXY(self):
         sum = 0
-        for k, v in self.dict.items():
-            sum = sum + k*v
+        for i in range(self.elemCount):                
+            sum = sum + self.llist[0][i] * self.llist[1][i]
         return round(sum,3)
 
     """
@@ -219,19 +209,19 @@ class LinearRegression(Regression):
     """    
     def getSumOfXPower2(self):
         sum = 0
-        for i in self.dict:
-            sum = sum + i**2
+        for i in range(len(self.llist[1])):
+            sum = sum + (self.llist[1][i])**2
         return round(sum,3)
     """
     Return Mean X
     """            
     def getXMean(self):
-        val = (sum(self.dict.keys())) / self.elemCount
+        val = (sum(self.llist[1])) / self.elemCount
         return round(val,3)
     """
     Return Mean Y
     """      
     def getYMean(self):
-        val = (sum(self.dict.values())) / self.elemCount
+        val = (sum(self.llist[0]) / self.elemCount)
         return round(val,3)
         

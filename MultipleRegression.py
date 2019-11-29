@@ -17,35 +17,31 @@ from Regression import Regression
 from LinearRegression import LinearRegression as LR
   
 class MultipleLinearRegression(Regression):
-    def __init__(self,Dict):
-        self.dict = OrderedDict(Dict);
-        self.threshLimit= 1.96 / (math.sqrt(len(Dict)))
-        self.elemCount=len(Dict)
+    def __init__(self,ldict):
+        self.ldict = ldict;
+        self.threshLimit= 1.96 / (math.sqrt(len(ldict)))
+        self.elemCount=len(ldict)
 
     def getThreshLimit(self):
         return round(self.threshLimit,3)
     
     def getDictYX1(self):
-        tup= self.get2PairDict()
-        return tup[0]
+        llist = [] 
+        llist.append(self.ldict[0])
+        llist.append(self.ldict[1])
+        return llist
 
     def getDictYX2(self):
-        tup= self.get2PairDict()
-        return tup[1]
+        llist = [] 
+        llist.append(self.ldict[0])
+        llist.append(self.ldict[2])
+        return llist
     
     def getDictX1X2(self):
-        tup= self.get2PairDict()
-        return tup[2]
-      
-    def get2PairDict(self):
-        dict_yx1 = {}
-        dict_yx2 = {}
-        dict_x1x2 = {}
-        for k, v in self.dict.items():
-            dict_yx1.update({v[0]:k})
-            dict_yx2.update({v[1]:k})
-            dict_x1x2.update({v[0]:v[1]})
-        return dict_yx1,dict_yx2,dict_x1x2
+        llist = [] 
+        llist.append(self.ldict[1])
+        llist.append(self.ldict[2])
+        return llist
 
     def getRyx1(self):
         regObj = LR(self.getDictYX1())
@@ -71,8 +67,8 @@ class MultipleLinearRegression(Regression):
        
     def getSx1(self):
         list = []
-        for k, v in self.dict.items():
-            val = (v[0] - self.getX1Mean())**2
+        for i in range(self.elemCount):
+            val = (self.ldict[1][i] - self.getYMean())**2
             val = round(val,3)
             list.append(val)
             
@@ -82,8 +78,8 @@ class MultipleLinearRegression(Regression):
 
     def getSx2(self):
         list = []
-        for k, v in self.dict.items():
-            val = (v[1] - self.getX2Mean())**2
+        for i in range(self.elemCount):
+            val = (self.ldict[2][i] - self.getYMean())**2
             val = round(val,3)
             list.append(val)
             
@@ -93,8 +89,8 @@ class MultipleLinearRegression(Regression):
  
     def getSy(self):
         list = []
-        for k, v in self.dict.items():
-            val = (k - self.getYMean())**2
+        for i in range(self.elemCount):
+            val = (self.ldict[0][i] - self.getYMean())**2
             val = round(val,3)
             list.append(val)
             
@@ -111,57 +107,53 @@ class MultipleLinearRegression(Regression):
         return round(val,3)
     
     def getYMean(self):
-        val = (sum(self.dict.keys())) / self.elemCount
+        val = (self.getSumOfY() / self.elemCount)
         return round(val,3)
     
     def getSumOfX1(self):
-        val = 0
-        for i in self.dict.items(): 
-            val = val + i[1][0] 
-        return round(val,3) 
+        val = sum(self.ldict[1])
+        return round(val,3)
 
     def getSumOfX2(self):
-        val = 0
-        for i in self.dict.items(): 
-            val = val + i[1][1] 
-        return round(val,3) 
+        val = sum(self.ldict[2])
+        return round(val,3)
     
     def getSumOfY(self):
-        val = sum(self.dict.keys())
+        val = sum(self.ldict[0])
         return round(val,3)
     
     def getSumOfX1Y(self):
         _sum = 0
-        for k, v in self.dict.items():
-            _sum = _sum + k*v[0]
+        for i in range(self.elemCount):
+            _sum = _sum + self.ldict[1][i]*self.ldict[0][i]
 
         return round(_sum,3)
     
     def getSumOfX2Y(self):
         _sum = 0
-        for k, v in self.dict.items():
-            _sum = _sum + k*v[1]
+        for i in range(self.elemCount):
+            _sum = _sum + self.ldict[2][i]*self.ldict[0][i]
 
         return round(_sum,3)
     
     def getSumOfX1X2(self):
         _sum = 0
-        for k, v in self.dict.items():
-            _sum = _sum + (v[0]*v[1])
+        for i in range(self.elemCount):
+            _sum = _sum + (self.ldict[1][i]*self.ldict[2][i])
 
         return round(_sum,3)    
       
     def getSumOfX1Power2(self):
         _sum = 0
-        for k, v in self.dict.items():
-            _sum = _sum + v[0]**2
+        for i in range(self.elemCount):
+            _sum = _sum + self.ldict[1][i]**2
             
         return round(_sum,3)
 
     def getSumOfX2Power2(self):
         _sum = 0
-        for k, v in self.dict.items():
-            _sum = _sum + v[1]**2
+        for i in range(self.elemCount):
+            _sum = _sum + self.ldict[2][i]**2
             
         return round(_sum,3)
     
@@ -195,9 +187,16 @@ class MultipleLinearRegression(Regression):
         valC  = tup[2]
         eqns = 'y = '+ '('+str(valM1) +')'+ '*x1' + ' + ' + '('+str(valM2) +')'+ '*x2' + ' + ' +'('+str(valC)+')'
         return eqns      
-        
+    def getsum(self,mylist):
+        val = 0
+        for i in range(len(mylist)):
+            val = val + mylist[i]
+        return val
 '''
 d = {64:(57,8), 71:(59,10), 53:(49,6), 67:(62,11), 55:(51,8), 58:(50,7),77:(55,10),57:(48,9),56:(52,10),51:(42,6),76:(61,12),68:(57,9)}
 ld = MultipleLinearRegression(d)
 print(ld.getSy())
 '''
+#d = [[64.0, 71.0, 53.0, 67.0, 55.0, 58.0, 77.0, 57.0, 56.0, 51.0, 76.0, 68.0], [57.0, 59.0, 49.0, 62.0, 51.0, 50.0, 55.0, 48.0, 52.0, 42.0, 61.0, 57.0], [8.0, 10.0, 6.0, 11.0, 8.0, 7.0, 10.0, 9.0, 10.0, 6.0, 12.0, 9.0]]
+#ld = MultipleLinearRegression(d)
+#print(ld.displayMultiEqn())

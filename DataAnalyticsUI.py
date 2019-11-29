@@ -28,26 +28,32 @@ import matplotlib.patches as mpatches
 
 class InitDict:
     def __init__(self):
-        self.dict = {};
-        self.listX = []
-        self.listY = []
+        self.ldict = [];
         self.header_x = ""
         self.header_y = ""
         self.nvar = 2
-    def initializeDict(self,Dict,listX,listY,header_x,header_y,nvar):
-        self.dict = Dict
-        self.listX = listX
-        self.listY = listY
+    def initializeDict(self,ldict,header_x,header_y,nvar):
+        self.ldict = ldict
         self.header_x = header_x
         self.header_y = header_y
         self.nvar = nvar
         
     def getDict(self):
-        return self.dict
+        return self.ldict
     def getListX(self):
-        return self.listX
+        if(self.nvar == 2):
+            return self.ldict[1]
+        elif(self.nvar == 3):
+            mylist = []
+            mylist.append(self.ldict[1])
+            mylist.append(self.ldict[2])
+            return mylist
+        else:
+            pass
+        
     def getListY(self):
-        return self.listY
+        return self.ldict[0]
+        
     def getHeader_x(self):
         return self.header_x
     def getHeader_y(self):
@@ -116,8 +122,8 @@ def open_file():
     if file:
         file_name = file.name
     print(file_name)
-    dataDict,listX,listY,header_x,header_y,var = csvToDict(file_name)
-    myDict.initializeDict(dataDict,listX,listY,header_x,header_y,var)
+    dataDict,header_x,header_y,var = csvToDict(file_name)
+    myDict.initializeDict(dataDict,header_x,header_y,var)
 
 # Exit GUI cleanly
 def _quit():
@@ -243,8 +249,8 @@ def getStats():
     if(myDict.getNoOfVar() == 2):
         regObj = LinearRegr(dic)
         m,c=regObj.getCoeffM_C()
-        for x, y in dic.items():
-            val = m * x + c
+        for i in range(len(myDict.getListY())):
+            val = m * listX[i] + c
             listY_predicted.append(val)
     
         eqn = regObj.displayEqn()
@@ -258,9 +264,9 @@ def getStats():
     elif(myDict.getNoOfVar() == 3):
         regObj = MultiLinearRegr(dic)
         m1,m2,c=regObj.getCoeffM1_M2_C()
-  
-        for k, v in dic.items():
-            val = m1 * v[0] + m2*v[1] + c
+
+        for i in range(len(myDict.getListY())):
+            val = m1 * listX[0][i] + m2*listX[1][i] + c
             listY_predicted.append(val)
     
         eqn = regObj.displayMultiEqn() 
